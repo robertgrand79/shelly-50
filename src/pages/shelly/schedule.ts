@@ -113,10 +113,20 @@ export const SCHEDULE: SchedulePart[] = [
             id: "sat_lava_cave",
             time: "10:30 AM",
             title: "Lava River Cave Exploration",
-            note: "Timed ticket required",
+            note: "Timed ticket required — book yours via recreation.gov.",
             needsHeadcount: true,
+            link: {
+              url: "https://www.recreation.gov/timed-entry/10089508",
+              label: "Reserve a ticket",
+            },
           },
-          { id: "sat_free_time", time: "Afternoon", title: "Free time — explore Bend / Sunriver" },
+          {
+            id: "sat_free_time",
+            time: "Afternoon",
+            title: "Free time — explore Bend / Sunriver",
+            note: "Open afternoon — no RSVP needed.",
+            informational: true,
+          },
         ],
       },
       {
