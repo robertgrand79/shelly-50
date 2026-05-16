@@ -123,7 +123,7 @@ export default function ShellyPhotoUpload() {
   };
 
   return (
-    <section id="photos" className="py-20 sm:py-28 px-4 sm:px-6 border-t border-amber-500/10">
+    <section id="photos" className="py-20 sm:py-28 px-4 sm:px-6 border-t border-line">
       <div className="max-w-3xl mx-auto">
         <SectionHeader
           eyebrow="Photo Memories"
@@ -132,32 +132,32 @@ export default function ShellyPhotoUpload() {
         />
 
         {submittedCount > 0 && (
-          <div className="mt-8 flex items-center justify-center gap-2 text-amber-300 text-sm">
+          <div className="mt-8 flex items-center justify-center gap-2 text-gold text-sm">
             <CheckCircle2 className="w-4 h-4" />
             {submittedCount} photo{submittedCount === 1 ? "" : "s"} already shared — thank you!
           </div>
         )}
 
-        <div className="mt-10 rounded-2xl border border-amber-500/20 bg-white/[0.02] p-6 sm:p-8">
+        <div className="mt-10 rounded-2xl border border-line bg-surface-1 p-6 sm:p-8">
           {/* Your info */}
           <div className="grid sm:grid-cols-2 gap-4 mb-6">
             <div className="space-y-1.5">
-              <Label className="text-amber-200/80 text-xs tracking-wide uppercase">Your name (optional)</Label>
+              <Label className="text-muted text-xs tracking-wide uppercase">Your name (optional)</Label>
               <Input
                 value={uploaderName}
                 onChange={(e) => setUploaderName(e.target.value)}
                 placeholder="So we can credit you"
-                className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+                className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-amber-200/80 text-xs tracking-wide uppercase">Email (optional)</Label>
+              <Label className="text-muted text-xs tracking-wide uppercase">Email (optional)</Label>
               <Input
                 type="email"
                 value={uploaderEmail}
                 onChange={(e) => setUploaderEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+                className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
               />
             </div>
           </div>
@@ -173,13 +173,13 @@ export default function ShellyPhotoUpload() {
             onClick={() => inputRef.current?.click()}
             className={`cursor-pointer rounded-xl border-2 border-dashed transition-all px-6 py-12 text-center ${
               dragOver
-                ? "border-amber-400 bg-amber-400/10"
-                : "border-amber-500/30 hover:border-amber-400/60 hover:bg-amber-500/5"
+                ? "border-[color:var(--c-gold-bright)] bg-gold-soft"
+                : "border-line-strong hover:border-line-strong hover:bg-gold-soft"
             }`}
           >
-            <Upload className="w-10 h-10 text-amber-400/70 mx-auto mb-3" />
-            <p className="text-amber-100 font-medium mb-1">Drop photos here or click to browse</p>
-            <p className="text-amber-200/60 text-xs">
+            <Upload className="w-10 h-10 text-gold-bright mx-auto mb-3" />
+            <p className="text-default font-medium mb-1">Drop photos here or click to browse</p>
+            <p className="text-muted text-xs">
               JPG, PNG, HEIC — up to {MAX_FILES} photos at a time, 15 MB each
             </p>
             <input
@@ -201,7 +201,7 @@ export default function ShellyPhotoUpload() {
               {photos.map((photo) => (
                 <div
                   key={photo.id}
-                  className="rounded-xl border border-amber-500/20 bg-[#0d0a08] overflow-hidden"
+                  className="rounded-xl border border-line bg-page overflow-hidden"
                 >
                   <div className="relative aspect-square bg-black">
                     <img
@@ -224,14 +224,14 @@ export default function ShellyPhotoUpload() {
                       onChange={(e) => updatePhoto(photo.id, { caption: e.target.value })}
                       rows={2}
                       placeholder="Caption (optional)"
-                      className="bg-transparent border-amber-500/20 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400 text-xs resize-none"
+                      className="bg-transparent border-line text-strong placeholder:text-faint focus-visible:ring-gold text-xs resize-none"
                     />
                     <Input
                       value={photo.year}
                       onChange={(e) => updatePhoto(photo.id, { year: e.target.value.replace(/[^0-9]/g, "").slice(0, 4) })}
                       placeholder="Year"
                       inputMode="numeric"
-                      className="bg-transparent border-amber-500/20 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400 text-xs h-8"
+                      className="bg-transparent border-line text-strong placeholder:text-faint focus-visible:ring-gold text-xs h-8"
                     />
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export default function ShellyPhotoUpload() {
                 onClick={uploadAll}
                 disabled={uploading}
                 size="lg"
-                className="bg-gradient-to-br from-amber-300 to-amber-500 hover:from-amber-200 hover:to-amber-400 text-[#0d0a08] font-medium px-10 py-6 rounded-full shadow-lg shadow-amber-500/30"
+                className="bg-cta hover:bg-cta-hover font-medium px-10 py-6 rounded-full shadow-cta"
               >
                 {uploading ? (
                   <>

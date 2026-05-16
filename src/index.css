@@ -6,37 +6,109 @@
 @tailwind utilities;
 
 @layer base {
+  /* Dark "Golden Glam" theme — gold + onyx (default) */
   :root {
-    /* Single dark "glam" theme — gold/onyx party aesthetic */
+    /* shadcn-style HSL tokens for primitives */
     --background: 20 28% 5%;
     --foreground: 45 67% 92%;
-
     --card: 20 28% 7%;
     --card-foreground: 45 67% 92%;
-
     --popover: 20 28% 7%;
     --popover-foreground: 45 67% 92%;
-
     --primary: 43 74% 60%;
     --primary-foreground: 20 28% 5%;
-
     --secondary: 20 20% 12%;
     --secondary-foreground: 45 67% 92%;
-
     --muted: 20 20% 12%;
     --muted-foreground: 45 30% 70%;
-
     --accent: 43 74% 60%;
     --accent-foreground: 20 28% 5%;
-
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
-
     --border: 43 50% 30%;
     --input: 43 50% 25%;
     --ring: 43 74% 60%;
-
     --radius: 0.75rem;
+
+    /* Semantic theme tokens used directly by components */
+    --c-page-bg: #0d0a08;
+    --c-surface-1: rgba(255, 255, 255, 0.02);
+    --c-surface-2: rgba(255, 255, 255, 0.04);
+    --c-input-bg: #0d0a08;
+    --c-text-strong: #fffbeb;       /* amber-50 */
+    --c-text-default: #fef3c7;      /* amber-100 */
+    --c-text-muted: rgba(254, 243, 199, 0.78);
+    --c-text-faint: rgba(253, 230, 138, 0.55);
+    --c-text-placeholder: rgba(253, 230, 138, 0.3);
+    --c-gold: #f59e0b;              /* amber-500 */
+    --c-gold-bright: #fbbf24;       /* amber-400 */
+    --c-gold-soft: rgba(245, 158, 11, 0.1);
+    --c-gold-medium: rgba(245, 158, 11, 0.18);
+    --c-gold-strong: rgba(245, 158, 11, 0.28);
+    --c-border-line: rgba(245, 158, 11, 0.18);
+    --c-border-line-strong: rgba(245, 158, 11, 0.35);
+    --c-danger: #fca5a5;
+    --c-gradient-gold: linear-gradient(135deg, #f5e7a8 0%, #d4a93e 50%, #f5e7a8 100%);
+    --c-hero-glow:
+      radial-gradient(ellipse at 50% 30%, rgba(245, 197, 100, 0.25), transparent 60%),
+      radial-gradient(ellipse at 80% 70%, rgba(180, 140, 60, 0.18), transparent 55%),
+      linear-gradient(180deg, #1a1410 0%, #0d0a08 100%);
+    --c-collage-glow:
+      radial-gradient(ellipse at 50% 20%, rgba(245, 197, 100, 0.22), transparent 60%),
+      linear-gradient(180deg, #1a1410 0%, #0d0a08 100%);
+    --c-cta-shadow: 0 18px 40px -10px rgba(245, 158, 11, 0.45);
+    --c-portrait-glow: 0 30px 80px -20px rgba(212, 169, 62, 0.55);
+  }
+
+  /* Light "Champagne Cream" theme — warm cream + deep gold */
+  :root[data-theme='light'] {
+    --background: 42 60% 96%;
+    --foreground: 28 45% 14%;
+    --card: 42 50% 99%;
+    --card-foreground: 28 45% 14%;
+    --popover: 42 50% 99%;
+    --popover-foreground: 28 45% 14%;
+    --primary: 32 75% 38%;
+    --primary-foreground: 42 60% 96%;
+    --secondary: 42 30% 88%;
+    --secondary-foreground: 28 45% 14%;
+    --muted: 42 30% 88%;
+    --muted-foreground: 28 25% 38%;
+    --accent: 32 75% 38%;
+    --accent-foreground: 42 60% 96%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 32 50% 60%;
+    --input: 32 50% 60%;
+    --ring: 32 75% 45%;
+
+    --c-page-bg: #faf6ed;
+    --c-surface-1: rgba(255, 252, 240, 0.85);
+    --c-surface-2: rgba(255, 248, 226, 0.95);
+    --c-input-bg: #fffdf5;
+    --c-text-strong: #2a1d05;
+    --c-text-default: #4a3410;
+    --c-text-muted: rgba(74, 52, 16, 0.75);
+    --c-text-faint: rgba(74, 52, 16, 0.55);
+    --c-text-placeholder: rgba(74, 52, 16, 0.4);
+    --c-gold: #b45309;              /* amber-700 */
+    --c-gold-bright: #d97706;       /* amber-600 */
+    --c-gold-soft: rgba(180, 83, 9, 0.08);
+    --c-gold-medium: rgba(180, 83, 9, 0.18);
+    --c-gold-strong: rgba(180, 83, 9, 0.28);
+    --c-border-line: rgba(180, 83, 9, 0.22);
+    --c-border-line-strong: rgba(180, 83, 9, 0.4);
+    --c-danger: #b91c1c;
+    --c-gradient-gold: linear-gradient(135deg, #b45309 0%, #d97706 50%, #b45309 100%);
+    --c-hero-glow:
+      radial-gradient(ellipse at 50% 30%, rgba(217, 119, 6, 0.18), transparent 60%),
+      radial-gradient(ellipse at 80% 70%, rgba(180, 83, 9, 0.1), transparent 55%),
+      linear-gradient(180deg, #fff7e0 0%, #faf6ed 100%);
+    --c-collage-glow:
+      radial-gradient(ellipse at 50% 20%, rgba(217, 119, 6, 0.16), transparent 60%),
+      linear-gradient(180deg, #fff7e0 0%, #faf6ed 100%);
+    --c-cta-shadow: 0 14px 32px -10px rgba(180, 83, 9, 0.4);
+    --c-portrait-glow: 0 24px 60px -18px rgba(180, 83, 9, 0.45);
   }
 
   * {
@@ -47,6 +119,7 @@
     font-size: 16px;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    background-color: var(--c-page-bg);
   }
 
   html,
@@ -56,7 +129,8 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    background-color: var(--c-page-bg);
+    color: var(--c-text-default);
     font-family: "Inter", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -82,5 +156,72 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/* Semantic utility classes that swap with the theme.
+   Components use these instead of hard-coded amber-* / hex colors. */
+@layer utilities {
+  .bg-page { background-color: var(--c-page-bg); }
+  .bg-page-blur { background-color: color-mix(in srgb, var(--c-page-bg) 80%, transparent); }
+  .bg-surface-1 { background-color: var(--c-surface-1); }
+  .bg-surface-2 { background-color: var(--c-surface-2); }
+  .bg-input { background-color: var(--c-input-bg); }
+  .bg-gold-soft { background-color: var(--c-gold-soft); }
+  .bg-gold-medium { background-color: var(--c-gold-medium); }
+  .bg-gold-strong { background-color: var(--c-gold-strong); }
+
+  .text-strong { color: var(--c-text-strong); }
+  .text-default { color: var(--c-text-default); }
+  .text-muted { color: var(--c-text-muted); }
+  .text-faint { color: var(--c-text-faint); }
+  .text-gold { color: var(--c-gold); }
+  .text-gold-bright { color: var(--c-gold-bright); }
+  .text-danger { color: var(--c-danger); }
+
+  .placeholder\:text-placeholder::placeholder { color: var(--c-text-placeholder); }
+
+  .border-line { border-color: var(--c-border-line); }
+  .border-line-strong { border-color: var(--c-border-line-strong); }
+  .border-gold-soft { border-color: var(--c-gold-soft); }
+
+  .ring-gold { --tw-ring-color: var(--c-gold-bright); }
+  .focus-visible\:ring-gold:focus-visible { --tw-ring-color: var(--c-gold-bright); }
+
+  .hover\:bg-gold-soft:hover { background-color: var(--c-gold-soft); }
+  .hover\:bg-gold-medium:hover { background-color: var(--c-gold-medium); }
+  .hover\:text-strong:hover { color: var(--c-text-strong); }
+  .hover\:text-default:hover { color: var(--c-text-default); }
+  .hover\:border-line-strong:hover { border-color: var(--c-border-line-strong); }
+
+  .group:hover .group-hover\:text-strong { color: var(--c-text-strong); }
+  .group:hover .group-hover\:text-default { color: var(--c-text-default); }
+
+  .bg-hero-glow { background: var(--c-hero-glow); }
+  .bg-collage-glow { background: var(--c-collage-glow); }
+  .gradient-gold-text {
+    background: var(--c-gradient-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .shadow-cta { box-shadow: var(--c-cta-shadow); }
+  .shadow-portrait { box-shadow: var(--c-portrait-glow); }
+
+  /* CTA button gradient — gold to dark-gold; works on both themes. */
+  .bg-cta {
+    background-image: linear-gradient(135deg, var(--c-gold-bright), var(--c-gold));
+    color: var(--c-page-bg);
+  }
+  .hover\:bg-cta-hover:hover {
+    background-image: linear-gradient(135deg, #fcd34d, var(--c-gold-bright));
+  }
+
+  /* Checkbox accent (used by Radix data-state=checked) */
+  [data-state="checked"].chk-gold,
+  .chk-gold[data-state="checked"] {
+    background-color: var(--c-gold-bright);
+    color: var(--c-page-bg);
+    border-color: var(--c-gold-bright);
   }
 }

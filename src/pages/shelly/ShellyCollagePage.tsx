@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Helmet } from "@/pages/shelly/Helmet";
 import { Sparkles, ArrowLeft, ImageIcon, Video, Loader2 } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface PhotoRow {
   id: string;
@@ -63,87 +64,73 @@ export default function ShellyCollagePage() {
   const videoCount = videos.length;
 
   return (
-    <div className="min-h-screen bg-[#0d0a08] text-amber-50 font-sans">
+    <div className="min-h-screen bg-page text-strong font-sans">
       <Helmet
         title="Shelly's Memory Wall — Photos & Videos"
         description="A growing collage of photos and birthday messages from everyone celebrating Shelly's 50th."
       />
 
-      <header className="sticky top-0 z-40 backdrop-blur-md bg-[#0d0a08]/80 border-b border-amber-500/20">
+      <header className="sticky top-0 z-40 backdrop-blur-md bg-page-blur border-b border-line">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <Link
             to="/"
-            className="flex items-center gap-2 font-serif text-amber-200 hover:text-amber-100 transition-colors"
+            className="flex items-center gap-2 font-serif text-default hover:text-default transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline tracking-wide">Back to RSVP</span>
             <span className="sm:hidden tracking-wide">RSVP</span>
           </Link>
-          <div className="flex items-center gap-2 text-amber-200 text-sm tracking-wide">
-            <Sparkles className="w-4 h-4 text-amber-400" />
+          <div className="flex items-center gap-3 text-default text-sm tracking-wide">
+            <Sparkles className="w-4 h-4 text-gold-bright" />
             <span>Memory Wall</span>
+            <ThemeToggle className="ml-1" />
           </div>
         </div>
       </header>
 
       <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 20%, rgba(245, 197, 100, 0.22), transparent 60%), linear-gradient(180deg, #1a1410 0%, #0d0a08 100%)",
-          }}
-        />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-collage-glow" />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-200 text-xs sm:text-sm tracking-[0.2em] uppercase mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-line-strong bg-gold-soft text-default text-xs sm:text-sm tracking-[0.2em] uppercase mb-6">
             <Sparkles className="w-3.5 h-3.5" />
             Memory Wall
           </div>
           <h1
-            className="font-serif font-light text-amber-50 leading-[1.05] tracking-tight mb-4"
+            className="font-serif font-light text-strong leading-[1.05] tracking-tight mb-4"
             style={{
               fontFamily: '"Cormorant Garamond", "Playfair Display", Georgia, serif',
               fontSize: "clamp(2.25rem, 6vw, 4rem)",
             }}
           >
             Shelly Through{" "}
-            <span
-              className="italic font-normal"
-              style={{
-                background: "linear-gradient(135deg, #f5e7a8 0%, #d4a93e 50%, #f5e7a8 100%)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
+            <span className="italic font-normal gradient-gold-text">
               the Years
             </span>
           </h1>
-          <p className="text-amber-100/80 text-base sm:text-lg max-w-2xl mx-auto">
+          <p className="text-muted text-base sm:text-lg max-w-2xl mx-auto">
             Photos, video birthday messages, and memories from everyone celebrating with us.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-amber-200/90 text-sm">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-muted text-sm">
             <span className="flex items-center gap-2">
-              <ImageIcon className="w-4 h-4 text-amber-400" />
+              <ImageIcon className="w-4 h-4 text-gold-bright" />
               {photoCount} {photoCount === 1 ? "photo" : "photos"}
             </span>
-            <span className="text-amber-500/40">•</span>
+            <span className="text-faint">•</span>
             <span className="flex items-center gap-2">
-              <Video className="w-4 h-4 text-amber-400" />
+              <Video className="w-4 h-4 text-gold-bright" />
               {videoCount} {videoCount === 1 ? "video" : "videos"}
             </span>
           </div>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/#photos"
-              className="px-6 py-3 rounded-full bg-gradient-to-br from-amber-300 to-amber-500 hover:from-amber-200 hover:to-amber-400 text-[#0d0a08] font-medium text-sm tracking-wide shadow-lg shadow-amber-500/30 transition-all"
+              className="px-6 py-3 rounded-full bg-cta hover:bg-cta-hover font-medium text-sm tracking-wide shadow-cta transition-all"
             >
               Share a Photo
             </Link>
             <Link
               to="/#video"
-              className="px-6 py-3 rounded-full border border-amber-500/40 text-amber-200 hover:bg-amber-500/10 transition-colors text-sm tracking-wide"
+              className="px-6 py-3 rounded-full border border-line-strong text-default hover:bg-gold-soft transition-colors text-sm tracking-wide"
             >
               Send a Video Message
             </Link>
@@ -152,14 +139,14 @@ export default function ShellyCollagePage() {
       </section>
 
       {loading && (
-        <div className="py-24 flex items-center justify-center text-amber-200/70 text-sm gap-2">
+        <div className="py-24 flex items-center justify-center text-muted text-sm gap-2">
           <Loader2 className="w-4 h-4 animate-spin" />
           Loading the wall…
         </div>
       )}
 
       {error && !loading && (
-        <div className="py-16 text-center text-red-300/80 text-sm px-4">
+        <div className="py-16 text-center text-danger text-sm px-4">
           Couldn't load the gallery: {error}
         </div>
       )}
@@ -167,15 +154,15 @@ export default function ShellyCollagePage() {
       {!loading && !error && (
         <>
           {videos.length > 0 && (
-            <section className="py-12 sm:py-16 px-4 sm:px-6 border-t border-amber-500/10">
+            <section className="py-12 sm:py-16 px-4 sm:px-6 border-t border-line">
               <div className="max-w-6xl mx-auto">
                 <h2
-                  className="font-serif text-2xl sm:text-3xl text-amber-50 mb-2"
+                  className="font-serif text-2xl sm:text-3xl text-strong mb-2"
                   style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
                 >
                   Birthday Messages
                 </h2>
-                <p className="text-amber-200/60 text-sm mb-8">
+                <p className="text-muted text-sm mb-8">
                   Recorded notes from friends and family.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -188,15 +175,15 @@ export default function ShellyCollagePage() {
           )}
 
           {photos.length > 0 && (
-            <section className="py-12 sm:py-16 px-4 sm:px-6 border-t border-amber-500/10">
+            <section className="py-12 sm:py-16 px-4 sm:px-6 border-t border-line">
               <div className="max-w-6xl mx-auto">
                 <h2
-                  className="font-serif text-2xl sm:text-3xl text-amber-50 mb-2"
+                  className="font-serif text-2xl sm:text-3xl text-strong mb-2"
                   style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
                 >
                   Photo Memories
                 </h2>
-                <p className="text-amber-200/60 text-sm mb-8">
+                <p className="text-muted text-sm mb-8">
                   {photoCount} {photoCount === 1 ? "memory" : "memories"} and counting.
                 </p>
                 <PhotoMasonry photos={photos} />
@@ -205,13 +192,13 @@ export default function ShellyCollagePage() {
           )}
 
           {photos.length === 0 && videos.length === 0 && (
-            <div className="py-24 text-center text-amber-200/70 text-sm px-4">
+            <div className="py-24 text-center text-muted text-sm px-4">
               The wall is empty so far. Be the first to share something —{" "}
-              <Link to="/#photos" className="underline hover:text-amber-100">
+              <Link to="/#photos" className="underline hover:text-default">
                 add a photo
               </Link>{" "}
               or{" "}
-              <Link to="/#video" className="underline hover:text-amber-100">
+              <Link to="/#video" className="underline hover:text-default">
                 record a message
               </Link>
               .
@@ -220,7 +207,7 @@ export default function ShellyCollagePage() {
         </>
       )}
 
-      <footer className="py-12 px-4 text-center text-amber-300/40 text-xs tracking-wide border-t border-amber-500/10">
+      <footer className="py-12 px-4 text-center text-faint text-xs tracking-wide border-t border-line">
         For Shelly, with love.
       </footer>
     </div>
@@ -230,7 +217,7 @@ export default function ShellyCollagePage() {
 function VideoCard({ video }: { video: VideoRow }) {
   const url = useMemo(() => publicUrl("shelly-videos", video.storage_path), [video.storage_path]);
   return (
-    <div className="rounded-2xl border border-amber-500/20 bg-white/[0.02] overflow-hidden">
+    <div className="rounded-2xl border border-line bg-surface-1 overflow-hidden">
       <video
         src={url}
         controls
@@ -239,9 +226,9 @@ function VideoCard({ video }: { video: VideoRow }) {
         className="w-full aspect-video bg-black object-contain"
       />
       <div className="p-4">
-        <p className="text-amber-100 text-sm font-medium">{video.full_name || "A friend"}</p>
+        <p className="text-default text-sm font-medium">{video.full_name || "A friend"}</p>
         {video.caption && (
-          <p className="text-amber-200/70 text-xs mt-1 leading-relaxed">{video.caption}</p>
+          <p className="text-muted text-xs mt-1 leading-relaxed">{video.caption}</p>
         )}
       </div>
     </div>
@@ -264,7 +251,7 @@ function PhotoTile({ photo }: { photo: PhotoRow }) {
   const hasMeta = photo.caption || photo.uploader_name || photo.photo_year;
 
   return (
-    <figure className="mb-4 break-inside-avoid rounded-xl overflow-hidden bg-white/[0.02] border border-amber-500/15 group">
+    <figure className="mb-4 break-inside-avoid rounded-xl overflow-hidden bg-surface-1 border border-line group">
       <div className="relative">
         <img
           src={url}
@@ -273,14 +260,14 @@ function PhotoTile({ photo }: { photo: PhotoRow }) {
           onLoad={() => setLoaded(true)}
           className={`w-full block transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
         />
-        {!loaded && <div className="absolute inset-0 bg-amber-500/5 animate-pulse" />}
+        {!loaded && <div className="absolute inset-0 bg-gold-soft animate-pulse" />}
       </div>
       {hasMeta && (
         <figcaption className="px-3 py-2.5 text-xs leading-relaxed">
           {photo.caption && (
-            <p className="text-amber-100/90">{photo.caption}</p>
+            <p className="text-muted">{photo.caption}</p>
           )}
-          <p className="text-amber-300/60 mt-1">
+          <p className="text-faint mt-1">
             {photo.uploader_name && <span>{photo.uploader_name}</span>}
             {photo.uploader_name && photo.photo_year && <span className="mx-1.5">·</span>}
             {photo.photo_year && <span>{photo.photo_year}</span>}

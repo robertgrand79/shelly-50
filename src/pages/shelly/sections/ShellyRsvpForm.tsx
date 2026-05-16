@@ -76,18 +76,18 @@ export default function ShellyRsvpForm() {
 
   if (submitted) {
     return (
-      <section id="rsvp" className="py-20 px-4 sm:px-6 border-t border-amber-500/10">
+      <section id="rsvp" className="py-20 px-4 sm:px-6 border-t border-line">
         <div className="max-w-2xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-400/20 border border-amber-400/40 mb-6">
-            <CheckCircle2 className="w-8 h-8 text-amber-300" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gold-medium border border-line-strong mb-6">
+            <CheckCircle2 className="w-8 h-8 text-gold" />
           </div>
           <h2
-            className="font-serif text-3xl sm:text-4xl text-amber-50 mb-4"
+            className="font-serif text-3xl sm:text-4xl text-strong mb-4"
             style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
           >
             RSVP Received!
           </h2>
-          <p className="text-amber-100/80 mb-6">
+          <p className="text-muted mb-6">
             Thank you for celebrating Shelly with us. Scroll down to record a birthday video message or share a
             favorite photo of Shelly through the years.
           </p>
@@ -97,7 +97,7 @@ export default function ShellyRsvpForm() {
               setForm(initialForm);
               setSubmitted(false);
             }}
-            className="border-amber-500/40 text-amber-200 bg-transparent hover:bg-amber-500/10 hover:text-amber-100"
+            className="border-line-strong text-default bg-transparent hover:bg-gold-soft hover:text-default"
           >
             Submit another RSVP
           </Button>
@@ -107,7 +107,7 @@ export default function ShellyRsvpForm() {
   }
 
   return (
-    <section id="rsvp" className="py-20 sm:py-28 px-4 sm:px-6 border-t border-amber-500/10">
+    <section id="rsvp" className="py-20 sm:py-28 px-4 sm:px-6 border-t border-line">
       <div className="max-w-3xl mx-auto">
         <SectionHeader
           eyebrow="RSVP"
@@ -117,9 +117,9 @@ export default function ShellyRsvpForm() {
 
         <form onSubmit={handleSubmit} className="mt-12 space-y-10">
           {/* Guest info */}
-          <div className="rounded-2xl border border-amber-500/20 bg-white/[0.02] p-6 sm:p-8 space-y-5">
+          <div className="rounded-2xl border border-line bg-surface-1 p-6 sm:p-8 space-y-5">
             <h3
-              className="font-serif text-2xl text-amber-100"
+              className="font-serif text-2xl text-default"
               style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
             >
               About you
@@ -131,7 +131,7 @@ export default function ShellyRsvpForm() {
                   value={form.full_name}
                   onChange={(e) => setField("full_name", e.target.value)}
                   placeholder="e.g. Sam & Jordan Rivera"
-                  className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+                  className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
                 />
               </Field>
               <Field label="Total in your party">
@@ -141,7 +141,7 @@ export default function ShellyRsvpForm() {
                   max={20}
                   value={form.party_size}
                   onChange={(e) => setField("party_size", Math.max(0, Number(e.target.value) || 0))}
-                  className="bg-[#0d0a08] border-amber-500/30 text-amber-50 focus-visible:ring-amber-400"
+                  className="bg-page border-line-strong text-strong focus-visible:ring-gold"
                 />
               </Field>
               <Field label="Email">
@@ -150,7 +150,7 @@ export default function ShellyRsvpForm() {
                   value={form.email}
                   onChange={(e) => setField("email", e.target.value)}
                   placeholder="you@example.com"
-                  className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+                  className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
                 />
               </Field>
               <Field label="Phone">
@@ -159,22 +159,22 @@ export default function ShellyRsvpForm() {
                   value={form.phone}
                   onChange={(e) => setField("phone", e.target.value)}
                   placeholder="(555) 555-5555"
-                  className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+                  className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
                 />
               </Field>
             </div>
           </div>
 
           {/* Can't attend toggle */}
-          <label className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-white/[0.02] p-5 cursor-pointer hover:bg-amber-500/[0.04] transition-colors">
+          <label className="flex items-start gap-3 rounded-xl border border-line bg-surface-1 p-5 cursor-pointer hover:bg-surface-2 transition-colors">
             <Checkbox
               checked={form.not_attending}
               onCheckedChange={(c) => setField("not_attending", !!c)}
-              className="mt-0.5 border-amber-400/60 data-[state=checked]:bg-amber-400 data-[state=checked]:text-[#0d0a08]"
+              className="mt-0.5 border-line-strong data-[state=checked]:bg-[color:var(--c-gold-bright)] data-[state=checked]:text-[color:var(--c-page-bg)]"
             />
-            <div className="text-sm text-amber-100/90">
-              <span className="font-medium text-amber-100">Sadly, I can't make it.</span>{" "}
-              <span className="text-amber-200/70">
+            <div className="text-sm text-muted">
+              <span className="font-medium text-default">Sadly, I can't make it.</span>{" "}
+              <span className="text-muted">
                 We'll miss you! Please consider recording a video message below for Shelly to watch at her Brunch
                 Bash.
               </span>
@@ -195,7 +195,7 @@ export default function ShellyRsvpForm() {
                 return (
                   <div key={part.part}>
                     <h3
-                      className="font-serif text-xl text-amber-200 mb-1"
+                      className="font-serif text-xl text-default mb-1"
                       style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
                     >
                       {part.subtitle}
@@ -206,11 +206,11 @@ export default function ShellyRsvpForm() {
                           key={day.key}
                           className={`rounded-xl border p-4 ${
                             day.highlight
-                              ? "border-amber-400/50 bg-amber-500/[0.06]"
-                              : "border-amber-500/20 bg-white/[0.02]"
+                              ? "border-line-strong bg-gold-soft"
+                              : "border-line bg-surface-1"
                           }`}
                         >
-                          <div className="text-amber-100 font-medium mb-3 text-sm">{day.date}</div>
+                          <div className="text-default font-medium mb-3 text-sm">{day.date}</div>
                           <div className="space-y-2.5">
                             {day.events.map((ev) => (
                               <label
@@ -220,11 +220,11 @@ export default function ShellyRsvpForm() {
                                 <Checkbox
                                   checked={!!form.attendance[ev.id]}
                                   onCheckedChange={(c) => toggleEvent(ev.id, !!c)}
-                                  className="mt-0.5 border-amber-400/50 data-[state=checked]:bg-amber-400 data-[state=checked]:text-[#0d0a08]"
+                                  className="mt-0.5 border-line-strong data-[state=checked]:bg-[color:var(--c-gold-bright)] data-[state=checked]:text-[color:var(--c-page-bg)]"
                                 />
                                 <div className="text-xs sm:text-sm leading-snug">
-                                  <span className="text-amber-300/80 font-mono">{ev.time}</span>{" "}
-                                  <span className="text-amber-50 group-hover:text-amber-100">
+                                  <span className="text-gold font-mono">{ev.time}</span>{" "}
+                                  <span className="text-strong group-hover:text-default">
                                     {ev.title}
                                   </span>
                                   {ev.link && (
@@ -233,14 +233,14 @@ export default function ShellyRsvpForm() {
                                       target="_blank"
                                       rel="noreferrer"
                                       onClick={(e) => e.stopPropagation()}
-                                      className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-400/50 bg-amber-400/10 text-amber-200 hover:bg-amber-400/20 hover:text-amber-100 text-[10px] tracking-wide align-middle"
+                                      className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-line-strong bg-gold-soft text-default hover:bg-gold-medium hover:text-default text-[10px] tracking-wide align-middle"
                                     >
                                       {ev.link.label}
                                       <ExternalLink className="w-2.5 h-2.5" />
                                     </a>
                                   )}
                                   {ev.note && (
-                                    <div className="text-amber-200/50 italic text-[11px] mt-0.5">
+                                    <div className="text-faint italic text-[11px] mt-0.5">
                                       {ev.note}
                                     </div>
                                   )}
@@ -258,14 +258,14 @@ export default function ShellyRsvpForm() {
           )}
 
           {/* Notes */}
-          <div className="rounded-2xl border border-amber-500/20 bg-white/[0.02] p-6 sm:p-8 space-y-5">
+          <div className="rounded-2xl border border-line bg-surface-1 p-6 sm:p-8 space-y-5">
             <Field label="Dietary restrictions, allergies, or anything we should know?">
               <Textarea
                 value={form.dietary_notes}
                 onChange={(e) => setField("dietary_notes", e.target.value)}
                 rows={3}
                 placeholder="Vegetarian, gluten-free, nut allergy, etc."
-                className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+                className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
               />
             </Field>
             <Field label="A note for Shelly (optional)">
@@ -274,7 +274,7 @@ export default function ShellyRsvpForm() {
                 onChange={(e) => setField("message", e.target.value)}
                 rows={3}
                 placeholder="Share a memory, a wish, or just say hi 🎉"
-                className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+                className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
               />
             </Field>
           </div>
@@ -284,7 +284,7 @@ export default function ShellyRsvpForm() {
               type="submit"
               disabled={submitting}
               size="lg"
-              className="bg-gradient-to-br from-amber-300 to-amber-500 hover:from-amber-200 hover:to-amber-400 text-[#0d0a08] font-medium px-10 py-6 text-base rounded-full shadow-lg shadow-amber-500/30 hover:shadow-amber-400/50 transition-all"
+              className="bg-cta hover:bg-cta-hover font-medium px-10 py-6 text-base rounded-full shadow-cta hover:shadow-cta transition-all"
             >
               {submitting ? (
                 <>
@@ -295,9 +295,9 @@ export default function ShellyRsvpForm() {
                 "Send My RSVP"
               )}
             </Button>
-            <p className="text-xs text-amber-200/50">
-              Or text Robert at <a href="tel:5419537247" className="text-amber-300 hover:underline">541-953-7247</a>{" "}
-              or Shelly at <a href="tel:5412210608" className="text-amber-300 hover:underline">541-221-0608</a>.
+            <p className="text-xs text-faint">
+              Or text Robert at <a href="tel:5419537247" className="text-gold hover:underline">541-953-7247</a>{" "}
+              or Shelly at <a href="tel:5412210608" className="text-gold hover:underline">541-221-0608</a>.
             </p>
           </div>
         </form>
@@ -317,9 +317,9 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-amber-200/80 text-xs tracking-wide uppercase">
+      <Label className="text-muted text-xs tracking-wide uppercase">
         {label}
-        {required && <span className="text-amber-400 ml-1">*</span>}
+        {required && <span className="text-gold-bright ml-1">*</span>}
       </Label>
       {children}
     </div>
