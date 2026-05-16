@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 interface FormState {
@@ -181,54 +181,79 @@ export default function ShellyRsvpForm() {
             </div>
           </label>
 
-          {/* Day-by-day event grid */}
+          {/* Day-by-day event grid (skips informational rows and empty days) */}
           {!form.not_attending && (
             <div className="space-y-8">
-              {SCHEDULE.map((part) => (
-                <div key={part.part}>
-                  <h3
-                    className="font-serif text-xl text-amber-200 mb-1"
-                    style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
-                  >
-                    {part.subtitle}
-                  </h3>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {part.days.map((day) => (
-                      <div
-                        key={day.key}
-                        className={`rounded-xl border p-4 ${
-                          day.highlight
-                            ? "border-amber-400/50 bg-amber-500/[0.06]"
-                            : "border-amber-500/20 bg-white/[0.02]"
-                        }`}
-                      >
-                        <div className="text-amber-100 font-medium mb-3 text-sm">{day.date}</div>
-                        <div className="space-y-2.5">
-                          {day.events.map((ev) => (
-                            <label
-                              key={ev.id}
-                              className="flex items-start gap-2.5 cursor-pointer group"
-                            >
-                              <Checkbox
-                                checked={!!form.attendance[ev.id]}
-                                onCheckedChange={(c) => toggleEvent(ev.id, !!c)}
-                                className="mt-0.5 border-amber-400/50 data-[state=checked]:bg-amber-400 data-[state=checked]:text-[#0d0a08]"
-                              />
-                              <div className="text-xs sm:text-sm leading-snug">
-                                <span className="text-amber-300/80 font-mono">{ev.time}</span>{" "}
-                                <span className="text-amber-50 group-hover:text-amber-100">{ev.title}</span>
-                                {ev.note && (
-                                  <div className="text-amber-200/50 italic text-[11px] mt-0.5">{ev.note}</div>
-                                )}
-                              </div>
-                            </label>
-                          ))}
+              {SCHEDULE.map((part) => {
+                const daysWithCheckable = part.days
+                  .map((day) => ({
+                    ...day,
+                    events: day.events.filter((e) => !e.informational),
+                  }))
+                  .filter((day) => day.events.length > 0);
+                if (daysWithCheckable.length === 0) return null;
+                return (
+                  <div key={part.part}>
+                    <h3
+                      className="font-serif text-xl text-amber-200 mb-1"
+                      style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
+                    >
+                      {part.subtitle}
+                    </h3>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {daysWithCheckable.map((day) => (
+                        <div
+                          key={day.key}
+                          className={`rounded-xl border p-4 ${
+                            day.highlight
+                              ? "border-amber-400/50 bg-amber-500/[0.06]"
+                              : "border-amber-500/20 bg-white/[0.02]"
+                          }`}
+                        >
+                          <div className="text-amber-100 font-medium mb-3 text-sm">{day.date}</div>
+                          <div className="space-y-2.5">
+                            {day.events.map((ev) => (
+                              <label
+                                key={ev.id}
+                                className="flex items-start gap-2.5 cursor-pointer group"
+                              >
+                                <Checkbox
+                                  checked={!!form.attendance[ev.id]}
+                                  onCheckedChange={(c) => toggleEvent(ev.id, !!c)}
+                                  className="mt-0.5 border-amber-400/50 data-[state=checked]:bg-amber-400 data-[state=checked]:text-[#0d0a08]"
+                                />
+                                <div className="text-xs sm:text-sm leading-snug">
+                                  <span className="text-amber-300/80 font-mono">{ev.time}</span>{" "}
+                                  <span className="text-amber-50 group-hover:text-amber-100">
+                                    {ev.title}
+                                  </span>
+                                  {ev.link && (
+                                    <a
+                                      href={ev.link.url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-400/50 bg-amber-400/10 text-amber-200 hover:bg-amber-400/20 hover:text-amber-100 text-[10px] tracking-wide align-middle"
+                                    >
+                                      {ev.link.label}
+                                      <ExternalLink className="w-2.5 h-2.5" />
+                                    </a>
+                                  )}
+                                  {ev.note && (
+                                    <div className="text-amber-200/50 italic text-[11px] mt-0.5">
+                                      {ev.note}
+                                    </div>
+                                  )}
+                                </div>
+                              </label>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 

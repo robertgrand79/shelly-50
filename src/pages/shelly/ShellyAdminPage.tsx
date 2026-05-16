@@ -59,7 +59,9 @@ interface VideoRow {
 
 const ALL_EVENTS = SCHEDULE.flatMap((part) =>
   part.days.flatMap((d) =>
-    d.events.map((e) => ({ id: e.id, label: `${d.shortDate} · ${e.title}` })),
+    d.events
+      .filter((e) => !e.informational)
+      .map((e) => ({ id: e.id, label: `${d.shortDate} · ${e.title}` })),
   ),
 );
 

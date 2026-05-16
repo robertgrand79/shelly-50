@@ -4,6 +4,10 @@ export interface ScheduleEvent {
   title: string;
   note?: string;
   needsHeadcount?: boolean;
+  /** When true, this is an FYI line in the schedule and is omitted from the RSVP checkbox grid. */
+  informational?: boolean;
+  /** Optional ticket / external link rendered next to the title. */
+  link?: { url: string; label: string };
 }
 
 export interface ScheduleDay {
@@ -33,7 +37,13 @@ export const SCHEDULE: SchedulePart[] = [
         shortDate: "Tue 6/9",
         events: [
           { id: "tue_shopping", time: "Afternoon", title: "Downtown Bend birthday shopping" },
-          { id: "tue_checkin", time: "4:00 PM", title: "Check-in at Marriott SpringHill Suites" },
+          {
+            id: "tue_checkin",
+            time: "4:00 PM",
+            title: "Hotel base camp: Marriott SpringHill Suites (Old Mill)",
+            note: "Shelly & Robert are staying here Tue–Thu. Book a room here or anywhere nearby — no RSVP needed for this one.",
+            informational: true,
+          },
           {
             id: "tue_welcome_dinner",
             time: "6:30 PM",
@@ -86,7 +96,11 @@ export const SCHEDULE: SchedulePart[] = [
             id: "fri_reggae",
             time: "All day",
             title: "Reggae Rise Up Festival",
-            note: "Secure your own tickets via the festival website ASAP. Shelly + Robert will join for Rebelution and as many other bands as possible.",
+            note: "Secure your own tickets ASAP. Shelly + Robert will join for Rebelution and as many other bands as possible.",
+            link: {
+              url: "https://www.eventliveus.com/event/10202/rruor26",
+              label: "Get tickets",
+            },
           },
         ],
       },
@@ -124,7 +138,15 @@ export const SCHEDULE: SchedulePart[] = [
         key: "mon_jun_15",
         date: "Monday, June 15",
         shortDate: "Mon 6/15",
-        events: [{ id: "mon_farewell", time: "10:00 AM", title: "Checkout & farewell" }],
+        events: [
+          {
+            id: "mon_farewell",
+            time: "Morning",
+            title: "Travel home day — safe drives!",
+            note: "Pure travel day. Nothing to RSVP for.",
+            informational: true,
+          },
+        ],
       },
     ],
   },

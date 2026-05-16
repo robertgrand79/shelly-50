@@ -1,5 +1,5 @@
 import { SCHEDULE } from "@/pages/shelly/schedule";
-import { Sparkles, MapPin } from "lucide-react";
+import { Sparkles, MapPin, ExternalLink } from "lucide-react";
 
 export default function ShellySchedule() {
   return (
@@ -54,6 +54,17 @@ export default function ShellySchedule() {
                           </span>
                           <div className="flex-1">
                             <span className="text-amber-50">{ev.title}</span>
+                            {ev.link && (
+                              <a
+                                href={ev.link.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="ml-2 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-amber-400/50 bg-amber-400/10 text-amber-200 hover:bg-amber-400/20 hover:text-amber-100 text-xs tracking-wide align-middle"
+                              >
+                                {ev.link.label}
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
                             {ev.note && (
                               <p className="text-amber-200/60 text-xs sm:text-sm mt-1 italic">{ev.note}</p>
                             )}
