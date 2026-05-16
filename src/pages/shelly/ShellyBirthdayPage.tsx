@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Helmet } from "@/pages/shelly/Helmet";
 import ShellyHero from "@/pages/shelly/sections/ShellyHero";
 import ShellySchedule from "@/pages/shelly/sections/ShellySchedule";
@@ -20,6 +20,7 @@ const navItems = [
 export default function ShellyBirthdayPage() {
   const [active, setActive] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   // Close mobile menu when the viewport grows past sm
   useEffect(() => {
@@ -29,6 +30,22 @@ export default function ShellyBirthdayPage() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  // Scroll to the section in the URL hash when arriving from another route
+  // (e.g. /#video or /#photos coming from the Happy Birthday Wall).
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.slice(1);
+    // Wait one frame so the section is laid out, then scroll.
+    const t = window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        setActive(id);
+      }
+    }, 50);
+    return () => window.clearTimeout(t);
+  }, [location.hash, location.key]);
 
   const scrollTo = (id: string) => {
     setActive(id);
