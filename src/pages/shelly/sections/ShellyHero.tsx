@@ -26,6 +26,24 @@ export default function ShellyHero({ onRsvp }: Props) {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-20 sm:py-28 text-center">
+        <div className="mb-10 flex justify-center">
+          <div className="relative">
+            <div
+              aria-hidden
+              className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-amber-300/40 via-amber-500/20 to-transparent blur-2xl"
+            />
+            <img
+              src="/shelly-hero.jpg"
+              alt="Shelly in a gold gown riding a winged white bison through golden sunset clouds, raising a glass beneath a sparkling 'Happy 50th Birthday, Shelly!' marquee."
+              width={1499}
+              height={2000}
+              loading="eager"
+              fetchPriority="high"
+              className="relative w-[260px] sm:w-[320px] md:w-[360px] rounded-2xl ring-1 ring-amber-400/40 shadow-[0_30px_80px_-20px_rgba(212,169,62,0.55)]"
+            />
+          </div>
+        </div>
+
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-200 text-xs sm:text-sm tracking-[0.2em] uppercase mb-8">
           <Sparkles className="w-3.5 h-3.5" />
           You're invited

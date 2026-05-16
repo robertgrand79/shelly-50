@@ -1,4 +1,5 @@
-import { Sparkles, Phone } from "lucide-react";
+import { Sparkles, Phone, Heart } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function ShellyFooter() {
   return (
@@ -11,6 +12,15 @@ export default function ShellyFooter() {
         Can't wait to see you in Bend
       </p>
       <p className="text-amber-200/60 text-sm mb-6">June 9 – 15, 2026 · Bend & Sunriver, Oregon</p>
+
+      <Link
+        to="/collage"
+        className="inline-flex items-center gap-2 px-5 py-2.5 mb-6 rounded-full border border-amber-500/40 text-amber-200 hover:bg-amber-500/10 transition-colors text-sm tracking-wide"
+      >
+        <Heart className="w-4 h-4 text-amber-400" />
+        See the Memory Wall
+      </Link>
+
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-amber-200/80 text-sm">
         <a
           href="tel:5419537247"
