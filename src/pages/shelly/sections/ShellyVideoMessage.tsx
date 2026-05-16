@@ -186,18 +186,18 @@ export default function ShellyVideoMessage() {
 
   if (submitted) {
     return (
-      <section id="video" className="py-20 px-4 sm:px-6 border-t border-amber-500/10">
+      <section id="video" className="py-20 px-4 sm:px-6 border-t border-line">
         <div className="max-w-2xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-400/20 border border-amber-400/40 mb-6">
-            <CheckCircle2 className="w-8 h-8 text-amber-300" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gold-medium border border-line-strong mb-6">
+            <CheckCircle2 className="w-8 h-8 text-gold" />
           </div>
           <h2
-            className="font-serif text-3xl sm:text-4xl text-amber-50 mb-4"
+            className="font-serif text-3xl sm:text-4xl text-strong mb-4"
             style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
           >
             Video Sent!
           </h2>
-          <p className="text-amber-100/80 mb-6">
+          <p className="text-muted mb-6">
             Shelly will see your message at her Brunch Bash on June 14. Thank you for making her day extra special.
           </p>
           <Button
@@ -209,7 +209,7 @@ export default function ShellyVideoMessage() {
               setCaption("");
               setSubmitted(false);
             }}
-            className="border-amber-500/40 text-amber-200 bg-transparent hover:bg-amber-500/10 hover:text-amber-100"
+            className="border-line-strong text-default bg-transparent hover:bg-gold-soft hover:text-default"
           >
             Send another video
           </Button>
@@ -219,7 +219,7 @@ export default function ShellyVideoMessage() {
   }
 
   return (
-    <section id="video" className="py-20 sm:py-28 px-4 sm:px-6 border-t border-amber-500/10">
+    <section id="video" className="py-20 sm:py-28 px-4 sm:px-6 border-t border-line">
       <div className="max-w-3xl mx-auto">
         <SectionHeader
           eyebrow="Video Messages"
@@ -227,17 +227,17 @@ export default function ShellyVideoMessage() {
           subtitle="Record a quick message right here, or upload a video from your phone. We'll play them at Sunday's Brunch Bash."
         />
 
-        <div className="mt-12 rounded-2xl border border-amber-500/20 bg-white/[0.02] p-6 sm:p-8">
+        <div className="mt-12 rounded-2xl border border-line bg-surface-1 p-6 sm:p-8">
           {/* Video preview / camera */}
-          <div className="relative aspect-video bg-black rounded-xl overflow-hidden border border-amber-500/20 mb-5">
+          <div className="relative aspect-video bg-black rounded-xl overflow-hidden border border-line mb-5">
             <video
               ref={videoRef}
               playsInline
               className="w-full h-full object-cover"
             />
             {mode === "idle" && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-amber-200/70 gap-2">
-                <Film className="w-12 h-12 text-amber-400/40" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-muted gap-2">
+                <Film className="w-12 h-12 text-gold-bright/40" />
                 <p className="text-sm">Press record or upload a file to get started</p>
               </div>
             )}
@@ -256,7 +256,7 @@ export default function ShellyVideoMessage() {
                 <Button
                   type="button"
                   onClick={startRecording}
-                  className="bg-amber-400 hover:bg-amber-300 text-[#0d0a08] font-medium rounded-full"
+                  className="bg-cta hover:bg-cta-hover font-medium rounded-full"
                 >
                   <Video className="w-4 h-4 mr-2" />
                   Record video
@@ -265,7 +265,7 @@ export default function ShellyVideoMessage() {
                   type="button"
                   variant="outline"
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-amber-500/40 text-amber-200 bg-transparent hover:bg-amber-500/10 hover:text-amber-100 rounded-full"
+                  className="border-line-strong text-default bg-transparent hover:bg-gold-soft hover:text-default rounded-full"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Upload a video
@@ -294,7 +294,7 @@ export default function ShellyVideoMessage() {
                 type="button"
                 variant="outline"
                 onClick={reset}
-                className="border-amber-500/40 text-amber-200 bg-transparent hover:bg-amber-500/10 hover:text-amber-100 rounded-full"
+                className="border-line-strong text-default bg-transparent hover:bg-gold-soft hover:text-default rounded-full"
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Start over
@@ -304,39 +304,39 @@ export default function ShellyVideoMessage() {
 
           {/* Submission form once we have a video */}
           {(mode === "preview-recorded" || mode === "preview-uploaded") && (
-            <div className="mt-8 pt-8 border-t border-amber-500/15 space-y-4">
+            <div className="mt-8 pt-8 border-t border-line space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-amber-200/80 text-xs tracking-wide uppercase">
-                    Your name <span className="text-amber-400">*</span>
+                  <Label className="text-muted text-xs tracking-wide uppercase">
+                    Your name <span className="text-gold-bright">*</span>
                   </Label>
                   <Input
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Who's this from?"
-                    className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+                    className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-amber-200/80 text-xs tracking-wide uppercase">Email (optional)</Label>
+                  <Label className="text-muted text-xs tracking-wide uppercase">Email (optional)</Label>
                   <Input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+                    className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
                   />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-amber-200/80 text-xs tracking-wide uppercase">Caption (optional)</Label>
+                <Label className="text-muted text-xs tracking-wide uppercase">Caption (optional)</Label>
                 <Textarea
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
                   rows={2}
                   placeholder="A note to play alongside your message"
-                  className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+                  className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
                 />
               </div>
               <div className="flex justify-center pt-2">
@@ -345,7 +345,7 @@ export default function ShellyVideoMessage() {
                   onClick={upload}
                   disabled={uploading}
                   size="lg"
-                  className="bg-gradient-to-br from-amber-300 to-amber-500 hover:from-amber-200 hover:to-amber-400 text-[#0d0a08] font-medium px-10 py-6 rounded-full shadow-lg shadow-amber-500/30"
+                  className="bg-cta hover:bg-cta-hover font-medium px-10 py-6 rounded-full shadow-cta"
                 >
                   {uploading ? (
                     <>

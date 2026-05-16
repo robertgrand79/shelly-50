@@ -20,6 +20,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { SCHEDULE } from "@/pages/shelly/schedule";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type Tab = "rsvps" | "photos" | "videos";
 
@@ -81,36 +82,37 @@ export default function ShellyAdminPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0d0a08] text-amber-50 font-sans">
+    <div className="min-h-screen bg-page text-strong font-sans">
       <Helmet title="Shelly 50th — Admin" />
 
-      <header className="sticky top-0 z-40 backdrop-blur-md bg-[#0d0a08]/80 border-b border-amber-500/20">
+      <header className="sticky top-0 z-40 backdrop-blur-md bg-page-blur border-b border-line">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <Link
             to="/"
-            className="flex items-center gap-2 font-serif text-amber-200 hover:text-amber-100 transition-colors"
+            className="flex items-center gap-2 font-serif text-default hover:text-default transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="tracking-wide">Back to site</span>
           </Link>
-          <div className="flex items-center gap-3 text-amber-200 text-sm">
-            <Sparkles className="w-4 h-4 text-amber-400" />
+          <div className="flex items-center gap-3 text-default text-sm">
+            <Sparkles className="w-4 h-4 text-gold-bright" />
             <span className="tracking-wide">Admin</span>
             {session && (
               <button
                 onClick={() => supabase.auth.signOut()}
-                className="ml-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-amber-500/30 text-amber-200/80 hover:text-amber-100 hover:bg-amber-500/10 text-xs"
+                className="ml-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-line-strong text-muted hover:text-default hover:bg-gold-soft text-xs"
               >
                 <LogOut className="w-3 h-3" />
                 Sign out
               </button>
             )}
+            <ThemeToggle className="ml-1" />
           </div>
         </div>
       </header>
 
       {bootstrapping ? (
-        <div className="py-24 flex items-center justify-center text-amber-200/70 text-sm gap-2">
+        <div className="py-24 flex items-center justify-center text-muted text-sm gap-2">
           <Loader2 className="w-4 h-4 animate-spin" />
           Checking session…
         </div>
@@ -146,45 +148,45 @@ function SignIn() {
 
   return (
     <section className="py-16 px-4 sm:px-6">
-      <div className="max-w-md mx-auto rounded-2xl border border-amber-500/20 bg-white/[0.02] p-8 text-center">
-        <Sparkles className="w-7 h-7 text-amber-400 mx-auto mb-4" />
+      <div className="max-w-md mx-auto rounded-2xl border border-line bg-surface-1 p-8 text-center">
+        <Sparkles className="w-7 h-7 text-gold-bright mx-auto mb-4" />
         <h1
-          className="font-serif text-3xl text-amber-50 mb-2"
+          className="font-serif text-3xl text-strong mb-2"
           style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}
         >
           Admin sign-in
         </h1>
-        <p className="text-amber-200/70 text-sm mb-6">
+        <p className="text-muted text-sm mb-6">
           Enter your admin email and we'll send you a sign-in link.
         </p>
 
         {sent ? (
-          <div className="text-amber-100 text-sm">
-            <Mail className="w-5 h-5 text-amber-400 mx-auto mb-2" />
-            Check <span className="text-amber-300">{email}</span> for a magic link. It expires in 1
+          <div className="text-default text-sm">
+            <Mail className="w-5 h-5 text-gold-bright mx-auto mb-2" />
+            Check <span className="text-gold">{email}</span> for a magic link. It expires in 1
             hour.
             <button
               onClick={() => setSent(false)}
-              className="block mx-auto mt-4 text-xs text-amber-300/70 underline hover:text-amber-200"
+              className="block mx-auto mt-4 text-xs text-muted underline hover:text-default"
             >
               Use a different email
             </button>
           </div>
         ) : (
           <div className="space-y-3 text-left">
-            <Label className="text-amber-200/80 text-xs tracking-wide uppercase">Email</Label>
+            <Label className="text-muted text-xs tracking-wide uppercase">Email</Label>
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
               placeholder="you@example.com"
-              className="bg-[#0d0a08] border-amber-500/30 text-amber-50 placeholder:text-amber-200/30 focus-visible:ring-amber-400"
+              className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
             />
             <Button
               onClick={send}
               disabled={sending || !email.trim()}
-              className="w-full bg-gradient-to-br from-amber-300 to-amber-500 hover:from-amber-200 hover:to-amber-400 text-[#0d0a08] font-medium rounded-full py-5"
+              className="w-full bg-cta hover:bg-cta-hover font-medium rounded-full py-5"
             >
               {sending ? (
                 <>
@@ -195,7 +197,7 @@ function SignIn() {
                 "Send me a link"
               )}
             </Button>
-            <p className="text-amber-300/50 text-[11px] mt-3 leading-relaxed">
+            <p className="text-faint text-[11px] mt-3 leading-relaxed">
               Only emails on the admin allowlist can access the data after signing in.
             </p>
           </div>
@@ -251,16 +253,16 @@ function AdminDashboard({ session }: { session: Session }) {
   if (accessDenied) {
     return (
       <section className="py-16 px-4 sm:px-6">
-        <div className="max-w-md mx-auto rounded-2xl border border-red-500/30 bg-red-500/5 p-8 text-center">
-          <ShieldAlert className="w-7 h-7 text-red-300 mx-auto mb-3" />
-          <h2 className="text-amber-50 font-medium mb-1">Not authorized</h2>
-          <p className="text-amber-200/70 text-sm mb-4">
-            <span className="text-amber-300">{session.user.email}</span> isn't on the admin
+        <div className="max-w-md mx-auto rounded-2xl border border-line-strong bg-[var(--c-gold-soft)] p-8 text-center">
+          <ShieldAlert className="w-7 h-7 text-danger mx-auto mb-3" />
+          <h2 className="text-strong font-medium mb-1">Not authorized</h2>
+          <p className="text-muted text-sm mb-4">
+            <span className="text-gold">{session.user.email}</span> isn't on the admin
             allowlist.
           </p>
           <button
             onClick={() => supabase.auth.signOut()}
-            className="text-xs text-amber-300/80 underline hover:text-amber-100"
+            className="text-xs text-gold underline hover:text-default"
           >
             Sign out and try another email
           </button>
@@ -271,7 +273,7 @@ function AdminDashboard({ session }: { session: Session }) {
 
   if (loading) {
     return (
-      <div className="py-24 flex items-center justify-center text-amber-200/70 text-sm gap-2">
+      <div className="py-24 flex items-center justify-center text-muted text-sm gap-2">
         <Loader2 className="w-4 h-4 animate-spin" />
         Loading…
       </div>
@@ -292,23 +294,23 @@ function AdminDashboard({ session }: { session: Session }) {
   return (
     <section className="py-10 sm:py-14 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-2 text-amber-300/60 text-xs tracking-wider uppercase">Signed in as</div>
-        <div className="mb-8 text-amber-100">{session.user.email}</div>
+        <div className="mb-2 text-faint text-xs tracking-wider uppercase">Signed in as</div>
+        <div className="mb-8 text-default">{session.user.email}</div>
 
-        <div className="flex flex-wrap items-center gap-2 mb-6 border-b border-amber-500/15">
+        <div className="flex flex-wrap items-center gap-2 mb-6 border-b border-line">
           {tabs.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
               className={`inline-flex items-center gap-2 px-4 py-2.5 -mb-px border-b-2 text-sm tracking-wide transition-colors ${
                 tab === t.id
-                  ? "border-amber-400 text-amber-100"
-                  : "border-transparent text-amber-200/60 hover:text-amber-100"
+                  ? "border-[color:var(--c-gold-bright)] text-default"
+                  : "border-transparent text-muted hover:text-default"
               }`}
             >
               {t.icon}
               {t.label}
-              <span className="text-amber-400/80 text-xs">{t.count}</span>
+              <span className="text-gold-bright text-xs">{t.count}</span>
             </button>
           ))}
         </div>
@@ -378,15 +380,15 @@ function RsvpsTable({ rsvps }: { rsvps: RsvpRow[] }) {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="text-amber-200/80 text-sm">
-          <span className="text-amber-100 font-medium">{totalGuests}</span> guests coming ·{" "}
-          <span className="text-amber-100 font-medium">{regrets}</span> regrets ·{" "}
-          <span className="text-amber-100 font-medium">{rsvps.length}</span> total submissions
+        <div className="text-muted text-sm">
+          <span className="text-default font-medium">{totalGuests}</span> guests coming ·{" "}
+          <span className="text-default font-medium">{regrets}</span> regrets ·{" "}
+          <span className="text-default font-medium">{rsvps.length}</span> total submissions
         </div>
         <Button
           onClick={exportCsv}
           variant="outline"
-          className="border-amber-500/30 text-amber-100 hover:bg-amber-500/10 hover:text-amber-50"
+          className="border-line-strong text-default hover:bg-gold-soft hover:text-strong"
         >
           <Download className="w-4 h-4 mr-2" />
           Export CSV
@@ -396,9 +398,9 @@ function RsvpsTable({ rsvps }: { rsvps: RsvpRow[] }) {
       {rsvps.length === 0 ? (
         <Empty label="No RSVPs yet." />
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-amber-500/15">
+        <div className="overflow-x-auto rounded-xl border border-line">
           <table className="w-full text-sm">
-            <thead className="bg-amber-500/5 text-amber-200/80 text-xs uppercase tracking-wider">
+            <thead className="bg-gold-soft text-muted text-xs uppercase tracking-wider">
               <tr>
                 <Th>Name</Th>
                 <Th>Contact</Th>
@@ -408,34 +410,34 @@ function RsvpsTable({ rsvps }: { rsvps: RsvpRow[] }) {
                 <Th>When</Th>
               </tr>
             </thead>
-            <tbody className="text-amber-100">
+            <tbody className="text-default">
               {rsvps.map((r) => {
                 const attendingEvents = ALL_EVENTS.filter((e) => r.attendance?.[e.id]);
                 return (
-                  <tr key={r.id} className="border-t border-amber-500/10 align-top">
+                  <tr key={r.id} className="border-t border-line align-top">
                     <Td>
                       <div className="font-medium">{r.full_name}</div>
                       {r.not_attending && (
-                        <div className="text-red-300/80 text-xs mt-0.5">Can't make it</div>
+                        <div className="text-danger text-xs mt-0.5">Can't make it</div>
                       )}
                     </Td>
                     <Td>
                       {r.email && <div className="text-xs">{r.email}</div>}
-                      {r.phone && <div className="text-xs text-amber-200/70">{r.phone}</div>}
+                      {r.phone && <div className="text-xs text-muted">{r.phone}</div>}
                     </Td>
                     <Td>{r.party_size}</Td>
                     <Td>
                       {r.not_attending ? (
-                        <span className="text-amber-200/40 text-xs">—</span>
+                        <span className="text-faint text-xs">—</span>
                       ) : attendingEvents.length === 0 ? (
-                        <span className="text-amber-200/40 text-xs">No events checked</span>
+                        <span className="text-faint text-xs">No events checked</span>
                       ) : (
                         <div className="text-xs space-y-0.5">
                           {attendingEvents.slice(0, 4).map((e) => (
                             <div key={e.id}>{e.label}</div>
                           ))}
                           {attendingEvents.length > 4 && (
-                            <div className="text-amber-300/70">
+                            <div className="text-muted">
                               +{attendingEvents.length - 4} more
                             </div>
                           )}
@@ -444,14 +446,14 @@ function RsvpsTable({ rsvps }: { rsvps: RsvpRow[] }) {
                     </Td>
                     <Td>
                       {r.dietary_notes && (
-                        <div className="text-xs italic text-amber-200/80">{r.dietary_notes}</div>
+                        <div className="text-xs italic text-muted">{r.dietary_notes}</div>
                       )}
                       {r.message && (
-                        <div className="text-xs text-amber-100/90 mt-1">{r.message}</div>
+                        <div className="text-xs text-muted mt-1">{r.message}</div>
                       )}
                     </Td>
                     <Td>
-                      <div className="text-xs text-amber-200/70">
+                      <div className="text-xs text-muted">
                         {new Date(r.created_at).toLocaleString()}
                       </div>
                     </Td>
@@ -476,13 +478,13 @@ function PhotosTable({ photos }: { photos: PhotoRow[] }) {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="text-amber-200/80 text-sm">
-          <span className="text-amber-100 font-medium">{photos.length}</span> photos uploaded
+        <div className="text-muted text-sm">
+          <span className="text-default font-medium">{photos.length}</span> photos uploaded
         </div>
         <Button
           onClick={exportCsv}
           variant="outline"
-          className="border-amber-500/30 text-amber-100 hover:bg-amber-500/10 hover:text-amber-50"
+          className="border-line-strong text-default hover:bg-gold-soft hover:text-strong"
         >
           <Download className="w-4 h-4 mr-2" />
           Export CSV
@@ -499,21 +501,21 @@ function PhotosTable({ photos }: { photos: PhotoRow[] }) {
             return (
               <div
                 key={p.id}
-                className="rounded-xl border border-amber-500/15 bg-white/[0.02] overflow-hidden"
+                className="rounded-xl border border-line bg-surface-1 overflow-hidden"
               >
                 <a href={url} target="_blank" rel="noreferrer" className="block">
                   <img src={url} alt={p.caption ?? ""} loading="lazy" className="w-full block" />
                 </a>
                 <div className="p-3 text-xs space-y-1">
-                  {p.caption && <p className="text-amber-100">{p.caption}</p>}
-                  <p className="text-amber-200/70">
-                    {p.uploader_name || <em className="text-amber-200/40">unsigned</em>}
+                  {p.caption && <p className="text-default">{p.caption}</p>}
+                  <p className="text-muted">
+                    {p.uploader_name || <em className="text-faint">unsigned</em>}
                     {p.photo_year && <span> · {p.photo_year}</span>}
                   </p>
                   {p.uploader_email && (
-                    <p className="text-amber-300/60 truncate">{p.uploader_email}</p>
+                    <p className="text-faint truncate">{p.uploader_email}</p>
                   )}
-                  <p className="text-amber-300/40">{new Date(p.created_at).toLocaleString()}</p>
+                  <p className="text-faint">{new Date(p.created_at).toLocaleString()}</p>
                 </div>
               </div>
             );
@@ -534,13 +536,13 @@ function VideosTable({ videos }: { videos: VideoRow[] }) {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="text-amber-200/80 text-sm">
-          <span className="text-amber-100 font-medium">{videos.length}</span> video messages
+        <div className="text-muted text-sm">
+          <span className="text-default font-medium">{videos.length}</span> video messages
         </div>
         <Button
           onClick={exportCsv}
           variant="outline"
-          className="border-amber-500/30 text-amber-100 hover:bg-amber-500/10 hover:text-amber-50"
+          className="border-line-strong text-default hover:bg-gold-soft hover:text-strong"
         >
           <Download className="w-4 h-4 mr-2" />
           Export CSV
@@ -557,7 +559,7 @@ function VideosTable({ videos }: { videos: VideoRow[] }) {
             return (
               <div
                 key={v.id}
-                className="rounded-xl border border-amber-500/15 bg-white/[0.02] overflow-hidden"
+                className="rounded-xl border border-line bg-surface-1 overflow-hidden"
               >
                 <video
                   src={url}
@@ -567,10 +569,10 @@ function VideosTable({ videos }: { videos: VideoRow[] }) {
                   className="w-full aspect-video bg-black"
                 />
                 <div className="p-3 text-xs space-y-1">
-                  <p className="text-amber-100 font-medium">{v.full_name}</p>
-                  {v.caption && <p className="text-amber-200/80">{v.caption}</p>}
-                  {v.email && <p className="text-amber-300/60 truncate">{v.email}</p>}
-                  <p className="text-amber-300/40">{new Date(v.created_at).toLocaleString()}</p>
+                  <p className="text-default font-medium">{v.full_name}</p>
+                  {v.caption && <p className="text-muted">{v.caption}</p>}
+                  {v.email && <p className="text-faint truncate">{v.email}</p>}
+                  <p className="text-faint">{new Date(v.created_at).toLocaleString()}</p>
                 </div>
               </div>
             );
@@ -589,7 +591,7 @@ function Td({ children }: { children: React.ReactNode }) {
 }
 function Empty({ label }: { label: string }) {
   return (
-    <div className="py-16 text-center text-amber-200/60 text-sm rounded-xl border border-amber-500/15">
+    <div className="py-16 text-center text-muted text-sm rounded-xl border border-line">
       {label}
     </div>
   );
