@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Helmet } from "@/pages/shelly/Helmet";
 import ShellyHero from "@/pages/shelly/sections/ShellyHero";
 import ShellySchedule from "@/pages/shelly/sections/ShellySchedule";
@@ -59,6 +60,12 @@ export default function ShellyBirthdayPage() {
                 {item.label}
               </button>
             ))}
+            <Link
+              to="/collage"
+              className="hidden sm:inline-block px-3 py-1.5 rounded-full text-xs sm:text-sm tracking-wide border border-amber-500/40 text-amber-200 hover:bg-amber-500/10 transition-colors"
+            >
+              Memory Wall
+            </Link>
           </nav>
         </div>
       </header>
