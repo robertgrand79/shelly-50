@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +6,7 @@ import { Helmet } from "@/pages/shelly/Helmet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -18,11 +19,15 @@ import {
   ImageIcon,
   Video,
   ShieldAlert,
+  Trash2,
+  Send,
+  UserPlus,
+  X,
 } from "lucide-react";
 import { SCHEDULE } from "@/pages/shelly/schedule";
 import ThemeToggle from "@/components/ThemeToggle";
 
-type Tab = "rsvps" | "photos" | "videos";
+type Tab = "rsvps" | "photos" | "videos" | "invites";
 
 interface RsvpRow {
   id: string;
@@ -56,6 +61,24 @@ interface VideoRow {
   size_bytes: number | null;
   caption: string | null;
   created_at: string;
+}
+
+interface InviteRow {
+  id: string;
+  email: string;
+  name: string | null;
+  notes: string | null;
+  added_at: string;
+}
+
+interface BroadcastRow {
+  id: string;
+  subject: string;
+  recipient_count: number;
+  success_count: number;
+  failure_count: number;
+  sent_by_email: string | null;
+  sent_at: string;
 }
 
 const ALL_EVENTS = SCHEDULE.flatMap((part) =>
@@ -212,26 +235,30 @@ function AdminDashboard({ session }: { session: Session }) {
   const [rsvps, setRsvps] = useState<RsvpRow[]>([]);
   const [photos, setPhotos] = useState<PhotoRow[]>([]);
   const [videos, setVideos] = useState<VideoRow[]>([]);
+  const [invites, setInvites] = useState<InviteRow[]>([]);
+  const [broadcasts, setBroadcasts] = useState<BroadcastRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [accessDenied, setAccessDenied] = useState(false);
+
+  const loadAll = useCallback(async () => {
+    const [rsvpsRes, photosRes, videosRes, invitesRes, broadcastsRes] = await Promise.all([
+      supabase.from("shelly_rsvps").select("*").order("created_at", { ascending: false }),
+      supabase.from("shelly_photos").select("*").order("created_at", { ascending: false }),
+      supabase.from("shelly_video_messages").select("*").order("created_at", { ascending: false }),
+      supabase.from("shelly_invites").select("*").order("added_at", { ascending: true }),
+      supabase.from("shelly_broadcasts").select("*").order("sent_at", { ascending: false }).limit(20),
+    ]);
+    setRsvps((rsvpsRes.data ?? []) as RsvpRow[]);
+    setPhotos((photosRes.data ?? []) as PhotoRow[]);
+    setVideos((videosRes.data ?? []) as VideoRow[]);
+    setInvites((invitesRes.data ?? []) as InviteRow[]);
+    setBroadcasts((broadcastsRes.data ?? []) as BroadcastRow[]);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const [rsvpsRes, photosRes, videosRes] = await Promise.all([
-        supabase.from("shelly_rsvps").select("*").order("created_at", { ascending: false }),
-        supabase.from("shelly_photos").select("*").order("created_at", { ascending: false }),
-        supabase.from("shelly_video_messages").select("*").order("created_at", { ascending: false }),
-      ]);
-      if (cancelled) return;
-      // If everything returns 0 rows AND we expected data, likely RLS is blocking
-      // (i.e. user is signed in but isn't on the admin allowlist).
-      const allEmpty =
-        (rsvpsRes.data?.length ?? 0) === 0 &&
-        (photosRes.data?.length ?? 0) === 0 &&
-        (videosRes.data?.length ?? 0) === 0;
-      // We confirm admin status with a direct RPC check.
       const { data: isAdmin } = await supabase.rpc("is_shelly_admin");
       if (cancelled) return;
       if (!isAdmin) {
@@ -239,26 +266,71 @@ function AdminDashboard({ session }: { session: Session }) {
         setLoading(false);
         return;
       }
-      setRsvps((rsvpsRes.data ?? []) as RsvpRow[]);
-      setPhotos((photosRes.data ?? []) as PhotoRow[]);
-      setVideos((videosRes.data ?? []) as VideoRow[]);
-      setLoading(false);
-      void allEmpty;
+      await loadAll();
+      if (!cancelled) setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [loadAll]);
+
+  const deletePhoto = useCallback(
+    async (photo: PhotoRow) => {
+      if (!window.confirm(`Permanently delete this photo? This can't be undone.`)) return;
+      const { error: storageErr } = await supabase.storage
+        .from("shelly-photos")
+        .remove([photo.storage_path]);
+      if (storageErr) {
+        console.error(storageErr);
+        toast.error(`Couldn't delete file: ${storageErr.message}`);
+        return;
+      }
+      const { error: rowErr } = await supabase.from("shelly_photos").delete().eq("id", photo.id);
+      if (rowErr) {
+        console.error(rowErr);
+        toast.error(`Storage file removed but row delete failed: ${rowErr.message}`);
+        return;
+      }
+      setPhotos((p) => p.filter((x) => x.id !== photo.id));
+      toast.success("Photo deleted.");
+    },
+    [],
+  );
+
+  const deleteVideo = useCallback(
+    async (video: VideoRow) => {
+      if (!window.confirm(`Permanently delete this video message? This can't be undone.`)) return;
+      const { error: storageErr } = await supabase.storage
+        .from("shelly-videos")
+        .remove([video.storage_path]);
+      if (storageErr) {
+        console.error(storageErr);
+        toast.error(`Couldn't delete file: ${storageErr.message}`);
+        return;
+      }
+      const { error: rowErr } = await supabase
+        .from("shelly_video_messages")
+        .delete()
+        .eq("id", video.id);
+      if (rowErr) {
+        console.error(rowErr);
+        toast.error(`Storage file removed but row delete failed: ${rowErr.message}`);
+        return;
+      }
+      setVideos((v) => v.filter((x) => x.id !== video.id));
+      toast.success("Video deleted.");
+    },
+    [],
+  );
 
   if (accessDenied) {
     return (
       <section className="py-16 px-4 sm:px-6">
-        <div className="max-w-md mx-auto rounded-2xl border border-line-strong bg-[var(--c-gold-soft)] p-8 text-center">
+        <div className="max-w-md mx-auto rounded-2xl border border-line-strong bg-gold-soft p-8 text-center">
           <ShieldAlert className="w-7 h-7 text-danger mx-auto mb-3" />
           <h2 className="text-strong font-medium mb-1">Not authorized</h2>
           <p className="text-muted text-sm mb-4">
-            <span className="text-gold">{session.user.email}</span> isn't on the admin
-            allowlist.
+            <span className="text-gold">{session.user.email}</span> isn't on the admin allowlist.
           </p>
           <button
             onClick={() => supabase.auth.signOut()}
@@ -289,6 +361,12 @@ function AdminDashboard({ session }: { session: Session }) {
       icon: <ImageIcon className="w-3.5 h-3.5" />,
     },
     { id: "videos", label: "Videos", count: videos.length, icon: <Video className="w-3.5 h-3.5" /> },
+    {
+      id: "invites",
+      label: "Invites",
+      count: invites.length,
+      icon: <Mail className="w-3.5 h-3.5" />,
+    },
   ];
 
   return (
@@ -316,8 +394,16 @@ function AdminDashboard({ session }: { session: Session }) {
         </div>
 
         {tab === "rsvps" && <RsvpsTable rsvps={rsvps} />}
-        {tab === "photos" && <PhotosTable photos={photos} />}
-        {tab === "videos" && <VideosTable videos={videos} />}
+        {tab === "photos" && <PhotosTable photos={photos} onDelete={deletePhoto} />}
+        {tab === "videos" && <VideosTable videos={videos} onDelete={deleteVideo} />}
+        {tab === "invites" && (
+          <InvitesTab
+            invites={invites}
+            broadcasts={broadcasts}
+            reload={loadAll}
+            session={session}
+          />
+        )}
       </div>
     </section>
   );
@@ -437,9 +523,7 @@ function RsvpsTable({ rsvps }: { rsvps: RsvpRow[] }) {
                             <div key={e.id}>{e.label}</div>
                           ))}
                           {attendingEvents.length > 4 && (
-                            <div className="text-muted">
-                              +{attendingEvents.length - 4} more
-                            </div>
+                            <div className="text-muted">+{attendingEvents.length - 4} more</div>
                           )}
                         </div>
                       )}
@@ -448,9 +532,7 @@ function RsvpsTable({ rsvps }: { rsvps: RsvpRow[] }) {
                       {r.dietary_notes && (
                         <div className="text-xs italic text-muted">{r.dietary_notes}</div>
                       )}
-                      {r.message && (
-                        <div className="text-xs text-muted mt-1">{r.message}</div>
-                      )}
+                      {r.message && <div className="text-xs text-muted mt-1">{r.message}</div>}
                     </Td>
                     <Td>
                       <div className="text-xs text-muted">
@@ -468,7 +550,13 @@ function RsvpsTable({ rsvps }: { rsvps: RsvpRow[] }) {
   );
 }
 
-function PhotosTable({ photos }: { photos: PhotoRow[] }) {
+function PhotosTable({
+  photos,
+  onDelete,
+}: {
+  photos: PhotoRow[];
+  onDelete: (p: PhotoRow) => Promise<void>;
+}) {
   const exportCsv = () =>
     downloadCsv(
       `shelly-photos-${new Date().toISOString().slice(0, 10)}.csv`,
@@ -501,8 +589,17 @@ function PhotosTable({ photos }: { photos: PhotoRow[] }) {
             return (
               <div
                 key={p.id}
-                className="rounded-xl border border-line bg-surface-1 overflow-hidden"
+                className="rounded-xl border border-line bg-surface-1 overflow-hidden group relative"
               >
+                <button
+                  type="button"
+                  onClick={() => onDelete(p)}
+                  aria-label="Delete photo"
+                  title="Delete permanently"
+                  className="absolute top-2 right-2 z-10 inline-flex items-center justify-center w-8 h-8 rounded-full bg-black/70 hover:bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
                 <a href={url} target="_blank" rel="noreferrer" className="block">
                   <img src={url} alt={p.caption ?? ""} loading="lazy" className="w-full block" />
                 </a>
@@ -512,9 +609,7 @@ function PhotosTable({ photos }: { photos: PhotoRow[] }) {
                     {p.uploader_name || <em className="text-faint">unsigned</em>}
                     {p.photo_year && <span> · {p.photo_year}</span>}
                   </p>
-                  {p.uploader_email && (
-                    <p className="text-faint truncate">{p.uploader_email}</p>
-                  )}
+                  {p.uploader_email && <p className="text-faint truncate">{p.uploader_email}</p>}
                   <p className="text-faint">{new Date(p.created_at).toLocaleString()}</p>
                 </div>
               </div>
@@ -526,7 +621,13 @@ function PhotosTable({ photos }: { photos: PhotoRow[] }) {
   );
 }
 
-function VideosTable({ videos }: { videos: VideoRow[] }) {
+function VideosTable({
+  videos,
+  onDelete,
+}: {
+  videos: VideoRow[];
+  onDelete: (v: VideoRow) => Promise<void>;
+}) {
   const exportCsv = () =>
     downloadCsv(
       `shelly-videos-${new Date().toISOString().slice(0, 10)}.csv`,
@@ -559,8 +660,17 @@ function VideosTable({ videos }: { videos: VideoRow[] }) {
             return (
               <div
                 key={v.id}
-                className="rounded-xl border border-line bg-surface-1 overflow-hidden"
+                className="rounded-xl border border-line bg-surface-1 overflow-hidden relative group"
               >
+                <button
+                  type="button"
+                  onClick={() => onDelete(v)}
+                  aria-label="Delete video"
+                  title="Delete permanently"
+                  className="absolute top-2 right-2 z-10 inline-flex items-center justify-center w-8 h-8 rounded-full bg-black/70 hover:bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
                 <video
                   src={url}
                   controls
@@ -578,6 +688,416 @@ function VideosTable({ videos }: { videos: VideoRow[] }) {
             );
           })}
         </div>
+      )}
+    </div>
+  );
+}
+
+// --- Invites ------------------------------------------------------------------
+
+const INVITE_TEMPLATES: Record<string, { subject: string; html: string }> = {
+  invite: {
+    subject: "You're invited to Shelly's Golden Glam 50th",
+    html: `<p>Hi {{first_name}},</p>
+<p>Robert and I (well, mostly Robert) are throwing a week of celebrations in Bend, Oregon for my <strong>50th birthday</strong> — <strong>June 9 – 15, 2026</strong> — and we'd love for you to be there.</p>
+<p>Come for one dinner, a hike, the Brunch Bash, or the whole week. The full schedule, dress code for the Sunday Brunch, and an RSVP form (per event) are here:</p>
+<p><a href="{{site_url}}" style="display:inline-block;padding:12px 22px;background:#d4a93e;color:#1a1410;border-radius:999px;text-decoration:none;font-weight:600">View invite &amp; RSVP →</a></p>
+<p>You can also record a quick birthday video message or upload a favorite photo of me through the years for our slideshow.</p>
+<p>Hope to see you there ✨</p>
+<p style="color:#888">— Shelly &amp; Robert</p>`,
+  },
+  update: {
+    subject: "Quick update on Shelly's 50th",
+    html: `<p>Hi {{first_name}},</p>
+<p>Just a quick update on the June 9 – 15 birthday plans:</p>
+<p><em>Write your update here…</em></p>
+<p>Need to change your RSVP or check the schedule? It's all at:<br/>
+<a href="{{site_url}}">{{site_url}}</a></p>
+<p style="color:#888">— Shelly &amp; Robert</p>`,
+  },
+  blank: {
+    subject: "",
+    html: "",
+  },
+};
+
+function parseBulkInvites(raw: string): { email: string; name: string | null }[] {
+  const out: { email: string; name: string | null }[] = [];
+  const seen = new Set<string>();
+  // Split on commas, semicolons, and newlines.
+  const lines = raw
+    .split(/[\n,;]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  for (const line of lines) {
+    // Match "Name <email>" or bare email.
+    const angle = line.match(/^\s*(.+?)\s*<\s*([^>\s]+@[^>\s]+)\s*>\s*$/);
+    let name: string | null = null;
+    let email: string;
+    if (angle) {
+      name = angle[1].replace(/^["']|["']$/g, "").trim() || null;
+      email = angle[2];
+    } else {
+      email = line;
+    }
+    const lower = email.toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) continue;
+    if (seen.has(lower)) continue;
+    seen.add(lower);
+    out.push({ email: lower, name });
+  }
+  return out;
+}
+
+function InvitesTab({
+  invites,
+  broadcasts,
+  reload,
+  session,
+}: {
+  invites: InviteRow[];
+  broadcasts: BroadcastRow[];
+  reload: () => Promise<void>;
+  session: Session;
+}) {
+  const [bulkText, setBulkText] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  const [template, setTemplate] = useState<keyof typeof INVITE_TEMPLATES>("invite");
+  const [subject, setSubject] = useState(INVITE_TEMPLATES.invite.subject);
+  const [html, setHtml] = useState(INVITE_TEMPLATES.invite.html);
+  const [sending, setSending] = useState(false);
+  const [sendingPreview, setSendingPreview] = useState(false);
+
+  const previewParsed = useMemo(() => parseBulkInvites(bulkText), [bulkText]);
+
+  const addBulk = async () => {
+    if (previewParsed.length === 0) {
+      toast.error("Paste at least one email address.");
+      return;
+    }
+    setAdding(true);
+    const { error } = await supabase
+      .from("shelly_invites")
+      .upsert(previewParsed, { onConflict: "email", ignoreDuplicates: true });
+    setAdding(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(`Added up to ${previewParsed.length} invitees.`);
+    setBulkText("");
+    void reload();
+  };
+
+  const removeInvite = async (inv: InviteRow) => {
+    if (!window.confirm(`Remove ${inv.email} from the invite list?`)) return;
+    const { error } = await supabase.from("shelly_invites").delete().eq("id", inv.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Removed.");
+    void reload();
+  };
+
+  const applyTemplate = (key: keyof typeof INVITE_TEMPLATES) => {
+    setTemplate(key);
+    const t = INVITE_TEMPLATES[key];
+    setSubject(t.subject);
+    setHtml(t.html);
+  };
+
+  const callBroadcast = async (payload: Record<string, unknown>) => {
+    const { data, error } = await supabase.functions.invoke("send-shelly-broadcast", {
+      body: payload,
+    });
+    if (error) throw error;
+    return data as { ok: boolean; sent: number; failed: number; failures?: { email: string; reason: string }[] };
+  };
+
+  const sendPreview = async () => {
+    if (!subject.trim() || !html.trim()) {
+      toast.error("Add a subject and a body first.");
+      return;
+    }
+    setSendingPreview(true);
+    try {
+      const res = await callBroadcast({ subject, html, preview_to: session.user.email });
+      if (res.failed > 0) {
+        toast.error(`Preview failed: ${res.failures?.[0]?.reason ?? "unknown"}`);
+      } else {
+        toast.success(`Preview sent to ${session.user.email}.`);
+      }
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSendingPreview(false);
+    }
+  };
+
+  const sendAll = async () => {
+    if (!subject.trim() || !html.trim()) {
+      toast.error("Add a subject and a body first.");
+      return;
+    }
+    if (invites.length === 0) {
+      toast.error("No invitees yet — paste some emails above first.");
+      return;
+    }
+    if (
+      !window.confirm(
+        `Send this message to ${invites.length} invitee${invites.length === 1 ? "" : "s"}? This sends real emails.`,
+      )
+    )
+      return;
+    setSending(true);
+    try {
+      const res = await callBroadcast({ subject, html });
+      if (res.failed > 0) {
+        toast.error(`Sent ${res.sent}, failed ${res.failed}. See console for details.`);
+        console.warn("Broadcast failures:", res.failures);
+      } else {
+        toast.success(`Sent to ${res.sent} ${res.sent === 1 ? "person" : "people"}.`);
+      }
+      void reload();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="space-y-10">
+      {/* Bulk add */}
+      <section className="rounded-2xl border border-line bg-surface-1 p-5 sm:p-6">
+        <div className="flex items-center gap-2 mb-2">
+          <UserPlus className="w-4 h-4 text-gold-bright" />
+          <h2 className="text-default font-medium">Add invitees</h2>
+        </div>
+        <p className="text-muted text-xs mb-4">
+          Paste emails (one per line, or comma/semicolon separated). Accepts{" "}
+          <code className="text-default">name@example.com</code> or{" "}
+          <code className="text-default">Sam Rivera &lt;sam@example.com&gt;</code>. Duplicates are
+          ignored.
+        </p>
+        <Textarea
+          rows={4}
+          value={bulkText}
+          onChange={(e) => setBulkText(e.target.value)}
+          placeholder={"sam@example.com\nJordan Rivera <jordan@example.com>\nkim@example.com"}
+          className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold font-mono text-sm"
+        />
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <p className="text-faint text-xs">
+            {previewParsed.length} valid {previewParsed.length === 1 ? "address" : "addresses"}{" "}
+            detected.
+          </p>
+          <Button
+            onClick={addBulk}
+            disabled={adding || previewParsed.length === 0}
+            className="bg-cta hover:bg-cta-hover font-medium rounded-full"
+          >
+            {adding ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Adding…
+              </>
+            ) : (
+              <>
+                <UserPlus className="w-4 h-4 mr-2" />
+                Add to invite list
+              </>
+            )}
+          </Button>
+        </div>
+      </section>
+
+      {/* Invitee list */}
+      <section>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div className="text-muted text-sm">
+            <span className="text-default font-medium">{invites.length}</span>{" "}
+            {invites.length === 1 ? "invitee" : "invitees"} on the list
+          </div>
+        </div>
+        {invites.length === 0 ? (
+          <Empty label="No invitees yet. Paste some emails above to get started." />
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-line">
+            <table className="w-full text-sm">
+              <thead className="bg-gold-soft text-muted text-xs uppercase tracking-wider">
+                <tr>
+                  <Th>Email</Th>
+                  <Th>Name</Th>
+                  <Th>Added</Th>
+                  <Th>{""}</Th>
+                </tr>
+              </thead>
+              <tbody className="text-default">
+                {invites.map((inv) => (
+                  <tr key={inv.id} className="border-t border-line align-top">
+                    <Td>{inv.email}</Td>
+                    <Td>{inv.name || <span className="text-faint">—</span>}</Td>
+                    <Td>
+                      <span className="text-xs text-muted">
+                        {new Date(inv.added_at).toLocaleDateString()}
+                      </span>
+                    </Td>
+                    <Td>
+                      <button
+                        type="button"
+                        onClick={() => removeInvite(inv)}
+                        title="Remove from list"
+                        className="inline-flex items-center justify-center w-7 h-7 rounded-full text-muted hover:text-danger hover:bg-gold-soft transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </Td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* Compose */}
+      <section className="rounded-2xl border border-line bg-surface-1 p-5 sm:p-6">
+        <div className="flex items-center gap-2 mb-2">
+          <Send className="w-4 h-4 text-gold-bright" />
+          <h2 className="text-default font-medium">Send a message</h2>
+        </div>
+        <p className="text-muted text-xs mb-4">
+          Sends one personalized email per invitee from{" "}
+          <code className="text-default">notifications@grandrei.com</code>. Variables:{" "}
+          <code className="text-default">{"{{first_name}}"}</code>,{" "}
+          <code className="text-default">{"{{name}}"}</code>,{" "}
+          <code className="text-default">{"{{email}}"}</code>,{" "}
+          <code className="text-default">{"{{site_url}}"}</code>.
+        </p>
+
+        <div className="flex flex-wrap gap-2 mb-4">
+          {(["invite", "update", "blank"] as const).map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => applyTemplate(k)}
+              className={`px-3 py-1.5 rounded-full text-xs tracking-wide border transition-colors ${
+                template === k
+                  ? "border-[color:var(--c-gold-bright)] bg-gold-soft text-default"
+                  : "border-line-strong text-muted hover:text-default hover:bg-gold-soft"
+              }`}
+            >
+              {k === "invite" ? "Initial invite" : k === "update" ? "Update" : "Blank"}
+            </button>
+          ))}
+        </div>
+
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label className="text-muted text-xs tracking-wide uppercase">Subject</Label>
+            <Input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-muted text-xs tracking-wide uppercase">Body (HTML)</Label>
+            <Textarea
+              rows={12}
+              value={html}
+              onChange={(e) => setHtml(e.target.value)}
+              className="bg-page border-line-strong text-strong placeholder:text-faint focus-visible:ring-gold font-mono text-xs"
+            />
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={sendPreview}
+            disabled={sendingPreview}
+            className="border-line-strong text-default hover:bg-gold-soft hover:text-strong rounded-full"
+          >
+            {sendingPreview ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Sending…
+              </>
+            ) : (
+              <>
+                <Mail className="w-4 h-4 mr-2" />
+                Send preview to me
+              </>
+            )}
+          </Button>
+          <Button
+            type="button"
+            onClick={sendAll}
+            disabled={sending || invites.length === 0}
+            className="bg-cta hover:bg-cta-hover font-medium rounded-full"
+          >
+            {sending ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Sending…
+              </>
+            ) : (
+              <>
+                <Send className="w-4 h-4 mr-2" />
+                Send to {invites.length} {invites.length === 1 ? "invitee" : "invitees"}
+              </>
+            )}
+          </Button>
+        </div>
+      </section>
+
+      {/* History */}
+      {broadcasts.length > 0 && (
+        <section>
+          <div className="text-muted text-sm mb-3">Recent sends</div>
+          <div className="overflow-x-auto rounded-xl border border-line">
+            <table className="w-full text-sm">
+              <thead className="bg-gold-soft text-muted text-xs uppercase tracking-wider">
+                <tr>
+                  <Th>Subject</Th>
+                  <Th>Recipients</Th>
+                  <Th>Result</Th>
+                  <Th>By</Th>
+                  <Th>When</Th>
+                </tr>
+              </thead>
+              <tbody className="text-default">
+                {broadcasts.map((b) => (
+                  <tr key={b.id} className="border-t border-line align-top">
+                    <Td>
+                      <div className="text-xs">{b.subject}</div>
+                    </Td>
+                    <Td>{b.recipient_count}</Td>
+                    <Td>
+                      <span className="text-default">{b.success_count} sent</span>
+                      {b.failure_count > 0 && (
+                        <span className="text-danger ml-1">· {b.failure_count} failed</span>
+                      )}
+                    </Td>
+                    <Td>
+                      <span className="text-xs text-muted">{b.sent_by_email}</span>
+                    </Td>
+                    <Td>
+                      <span className="text-xs text-muted">
+                        {new Date(b.sent_at).toLocaleString()}
+                      </span>
+                    </Td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       )}
     </div>
   );
