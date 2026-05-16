@@ -66,7 +66,7 @@ export default function ShellyCollagePage() {
   return (
     <div className="min-h-screen bg-page text-strong font-sans">
       <Helmet
-        title="Shelly's Memory Wall — Photos & Videos"
+        title="Shelly's Happy Birthday Wall — Photos & Videos"
         description="A growing collage of photos and birthday messages from everyone celebrating Shelly's 50th."
       />
 
@@ -82,7 +82,8 @@ export default function ShellyCollagePage() {
           </Link>
           <div className="flex items-center gap-3 text-default text-sm tracking-wide">
             <Sparkles className="w-4 h-4 text-gold-bright" />
-            <span>Memory Wall</span>
+            <span className="hidden sm:inline">Happy Birthday Wall</span>
+            <span className="sm:hidden">Wall</span>
             <ThemeToggle className="ml-1" />
           </div>
         </div>
@@ -93,7 +94,7 @@ export default function ShellyCollagePage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-line-strong bg-gold-soft text-default text-xs sm:text-sm tracking-[0.2em] uppercase mb-6">
             <Sparkles className="w-3.5 h-3.5" />
-            Memory Wall
+            Happy Birthday Wall
           </div>
           <h1
             className="font-serif font-light text-strong leading-[1.05] tracking-tight mb-4"

@@ -18,7 +18,7 @@ export default function ShellyFooter() {
         className="inline-flex items-center gap-2 px-5 py-2.5 mb-6 rounded-full border border-line-strong text-default hover:bg-gold-soft transition-colors text-sm tracking-wide"
       >
         <Heart className="w-4 h-4 text-gold-bright" />
-        See the Memory Wall
+        See the Happy Birthday Wall
       </Link>
 
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-muted text-sm">
